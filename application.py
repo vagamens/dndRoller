@@ -45,12 +45,6 @@ class Die:
 		# Radio buttons
 		self._RadioAdd = gtk.RadioButton(None, "+")
 		self._RadioSub = gtk.RadioButton(self._RadioAdd, "-")
-		self._RadioBox = gtk.HButtonBox()
-		self._RadioBox.set_homogeneous(True)
-		self._RadioBox.set_layout(gtk.BUTTONBOX_END)
-		# Button box
-		self._RadioBox.pack_start(self._RadioAdd, False, True, 0)
-		self._RadioBox.pack_start(self._RadioSub, False, True, 0)
 		# Modifier
 		self._Modifier = gtk.Entry(max=3)
 		self._Modifier.set_width_chars(3)
@@ -66,7 +60,8 @@ class Die:
 		self._Result.set_alignment(1)
 		self.NumberPosition = self._Number
 		self.NumberLabelPosition = self._NumberLabel
-		self.AddSubPosition = self._RadioBox
+		self.AddPosition = self._RadioAdd
+		self.SubPosition = self._RadioSub
 		self.ModifierPosition = self._Modifier
 		self.RollPosition = self._Roll
 		self.ResultPosition = self._Result
@@ -75,7 +70,7 @@ class Die:
 		else:
 			self.ImagePosition = self._Image
 		self.rowStuff = [self.ImagePosition, self.NumberPosition, self.NumberLabelPosition,
-						 self.AddSubPosition, self.ModifierPosition, self.RollPosition,
+						 self.AddPosition, self.SubPosition, self.ModifierPosition, self.RollPosition,
 						 self.ResultPosition]
 
 	def show(self):
@@ -85,7 +80,6 @@ class Die:
 		self._NumberLabel.show()
 		self._RadioAdd.show()
 		self._RadioSub.show()
-		self._RadioBox.show()
 		self._Modifier.show()
 		self._Roll.show()
 		self._Result.show()
@@ -109,8 +103,7 @@ class DnDRoller:
 								  top_attach=top, bottom_attach=bottom, xoptions=gtk.FILL,
 								  yoptions=gtk.FILL, xpadding=0, ypadding=0)
 		for attachment in attachments:
-			self.mainTable.attach(attachment, left_attach=start, right_attach=end, top_attach=top,
-							 	  bottom_attach=bottom, xoptions=gtk.FILL, yoptions=gtk.FILL, xpadding=0, ypadding=0)
+			self.mainTable.attach(attachment, left_attach=start, right_attach=end, top_attach=top, bottom_attach=bottom, xoptions=gtk.FILL, yoptions=gtk.FILL, xpadding=0, ypadding=0)
 			start += 1
 			end += 1
 
@@ -133,7 +126,7 @@ class DnDRoller:
 		self.window.set_border_width(10)
 
 		# Create a vertical box to pack the horizontal boxes
-		self.mainTableCols = 8
+		self.mainTableCols = 9
 		self.mainTableRows = 10
 		self.mainTable = gtk.Table(rows=self.mainTableRows, columns=self.mainTableCols, homogeneous=False)
 		
@@ -147,11 +140,11 @@ class DnDRoller:
 		quitButton = gtk.Button("Quit")
 		quitButton.connect("clicked", lambda w: gtk.main_quit())
 		# Pack the labels into the horizontal box
-		self.tableAttach([dieLabel, numberLabel, blankLabel, blankLabel,
+		self.tableAttach([dieLabel, numberLabel, blankLabel, blankLabel, blankLabel,
 						  modifierlabel, blankLabel, resultsLabel], 0, 1)
-		self.tableAttach([separator], 1, 2, True)
-		self.tableAttach([quitButton], self.mainTableRows-1, self.mainTableRows,
-						 self.mainTableCols-1, self.mainTableCols)
+		self.tableAttach([separator], top=1, bottom=2, fillsRow=True)
+		self.tableAttach([quitButton], top=self.mainTableRows-1, bottom=self.mainTableRows,
+						  start=self.mainTableCols-1, end=self.mainTableCols)
 		# Show the labels
 		dieLabel.show()
 		numberLabel.show()
@@ -162,28 +155,28 @@ class DnDRoller:
 		quitButton.show()
 
 		# Setup the d4 row
-		self.tableAttach(d4.rowStuff, 2, 3)
+		self.tableAttach(d4.rowStuff, top=2, bottom=3)
 
 		# Setup the d6 row
-		self.tableAttach(d6.rowStuff, 3, 4)
+		self.tableAttach(d6.rowStuff, top=3, bottom=4)
 		
 		#Setup the d8 row
-		self.tableAttach(d8.rowStuff, 4, 5)
+		self.tableAttach(d8.rowStuff, top=4, bottom=5)
 		
 		# Setup the d10 row
-		self.tableAttach(d10.rowStuff, 5, 6)
+		self.tableAttach(d10.rowStuff, top=5, bottom=6)
 		
 		# Setup the d12 row
-		self.tableAttach(d12.rowStuff, 6, 7)
+		self.tableAttach(d12.rowStuff, top=6, bottom=7)
 		
 		# Setup the d20 row
-		self.tableAttach(d20.rowStuff, 7, 8)
+		self.tableAttach(d20.rowStuff, top=7, bottom=8)
 		
 		# # Setup the d100 row
-		self.tableAttach(d100.rowStuff, 8, 9)
+		self.tableAttach(d100.rowStuff, top=8, bottom=9)
 
 		# # Setup the dx row
-		self.tableAttach(dx.rowStuff, 9, 10)
+		self.tableAttach(dx.rowStuff, top=9, bottom=10)
 
 		# Show all the elements
 		d4.show()
