@@ -5,6 +5,39 @@ pygtk.require('2.0')
 import gtk
 from diceRoller import dice
 
+
+class ImageEx(gtk.Image):
+	pixbuf = None
+
+	def __init__(self, *args, **kwargs):
+		super(ImageEx, self).__init__(*args, **kwargs)
+		self.connect("size-allocate", self.on_size_allocate)
+
+	def set_pixbuf(self, pixbuf):
+		"""
+		use this function instead of set_from_pixbuf
+		it sets additional pixbuf, which allows to implement autoscaling
+		"""
+		#self.pixbuf = pixbuf
+		#self.set_from_pixbuf(pixbuf)
+
+	def on_size_allocate(self, obj, rec):
+		# skip if no pixbuf set
+		if self.pixbuf is None:
+			return
+
+		# calculate proportions for image widget and for image
+		k_pixbuf = float(self.pixbuf.props.height) / self.pixubf.props.width
+		k_rect = float(rect.height) / rect.width
+
+		# recalculate new height and width
+		if k_pixbuf < k_rect:
+			newWidth = rect.width
+			newHeight = int(newWidth * k_pixbuf)
+		else:
+			newHeight = rect.height
+			newWidth = int(newHeight / k_pixbuf)
+
 class Die:
 	def callback(self, widget, callback_data=None):
 		if self.__variable:
@@ -26,12 +59,15 @@ class Die:
 			self._Sides.set_width_chars(3)
 			self._Sides.set_text('1')
 		elif self.__showImage:
-			self._Image = gtk.Image()
-			self._Image.set_from_file(image)
+			self._Image = ImageEx()
+			self._Image.set_size_request(width=400, height=400)
+			self._Pixbuf = gtk.gdk.pixbuf_new_from_file(image)
+			self._Image.set_pixbuf(image)
+			self._Image.show()
 		# Initialize the die
 		self._die = dice.Dice(sides)
 		# Setup the number box
-		self._Number = gtk.Entry(max=3)
+		self._Number = gtk.Entry()
 		self._Number.set_width_chars(3)
 		self._Number.set_alignment(1)
 		# Set the number text
@@ -92,6 +128,7 @@ class Die:
 		self._Result.set_text('')
 		self._RadioAdd.set_active(True)
 
+
 class DnDRoller:
 	def delete_event(self, widget, event, data=None):
 		gtk.main_quit()
@@ -109,13 +146,13 @@ class DnDRoller:
 
 	def __init__(self):
 		# Initialize the sets
-		d4 = Die(sides=4, image='d4a.jpg', variable=False)
-		d6 = Die(sides=6, image='d6a.jpg', variable=False)
-		d8 = Die(sides=8, image='d8a.jpg', variable=False)
-		d10 = Die(sides=10, image='d10a.jpg', variable=False)
-		d12 = Die(sides=12, image='d12a.jpg', variable=False)
-		d20 = Die(sides=20, image='d20a.jpg', variable=False)
-		d100 = Die(sides=100, image='d100a.jpg', variable=False)
+		d4 = Die(sides=4, image='d4b.png', variable=False)
+		d6 = Die(sides=6, image='d6b.png', variable=False)
+		d8 = Die(sides=8, image='d8b.png', variable=False)
+		d10 = Die(sides=10, image='d10b.png', variable=False)
+		d12 = Die(sides=12, image='d12b.png', variable=False)
+		d20 = Die(sides=20, image='d20b.png', variable=False)
+		d100 = Die(sides=100, image='d100b.png', variable=False)
 		dx = Die(sides=2, showImage=False, variable=True)
 		# Create the window
 		self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
